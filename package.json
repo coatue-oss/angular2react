@@ -1,0 +1,57 @@
+{
+  "name": "angular2react",
+  "version": "1.0.0",
+  "description": "One line of code to turn any Angular 1 Component into a React Component",
+  "main": "index.js",
+  "main:esnext": "index.es2015.js",
+  "typings": "index.d.ts",
+  "scripts": {
+    "build": "npm run clean; tsc -d -m es2015 && mv ./index.js ./index.es2015.js && tsc -m commonjs -t es5",
+    "clean": "rm ./*.d.ts; rm ./*.map; exit 0",
+    "pretest": "npm run build",
+    "prepublish": "npm test",
+    "test": "karma start --single-run",
+    "tdd": "npm-run-all -pr watch:*",
+    "watch:ts": "tsc -w",
+    "watch:test": "karma start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/coatue/angular2react.git"
+  },
+  "keywords": [],
+  "author": "Boris Cherny <boris@performancejs.com>",
+  "license": "Apache2",
+  "bugs": {
+    "url": "https://github.com/coatue/angular2react/issues"
+  },
+  "homepage": "https://github.com/coatue/angular2react#readme",
+  "devDependencies": {
+    "@types/angular-mocks": "^1.5.9",
+    "@types/jasmine": "^2.5.44",
+    "@types/react-addons-test-utils": "^0.14.17",
+    "angular-mocks": "^1.6.2",
+    "jasmine": "^2.5.3",
+    "karma": "^1.5.0",
+    "karma-browserify": "^5.1.1",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-jasmine": "^1.1.0",
+    "karma-mocha-reporter": "^2.2.2",
+    "karma-source-map-support": "^1.2.0",
+    "npm-run-all": "^4.0.2",
+    "react-addons-test-utils": "^15.4.2",
+    "rollupify": "^0.3.9",
+    "tslint": "^4.5.1",
+    "typescript": "^2.2.1",
+    "watchify": "^3.9.0"
+  },
+  "dependencies": {
+    "@types/angular": "^1.6.9",
+    "@types/react": "^15.0.16",
+    "@types/react-dom": "^0.14.23",
+    "angular": "^1.6.3",
+    "ngimport": "^0.6.0",
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2"
+  }
+}

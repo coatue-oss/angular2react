@@ -1,4 +1,5 @@
-import { IScope } from 'angular'
+import { IComponentOptions, IScope } from 'angular'
+import kebabCase = require('lodash.kebabcase')
 import { $compile, $log, $rootScope } from 'ngimport'
 import * as React from 'react'
 
@@ -17,22 +18,26 @@ interface State<Props> {
  * Usage:
  *
  *   ```ts
+ *   const Bar = { bindings: {...}, template: '...', ... }
+ *
  *   angular
  *     .module('foo', [])
- *     .component('bar', {...})
+ *     .component('bar', Bar)
  *
  *   type Props = {
  *     onChange(value: number): void
  *   }
  *
- *   const Bar = angular2react<Props>(
- *    '<bar on-change="props.onChange"></bar>
- *   ')
+ *   const Bar = angular2react<Props>('bar', Bar)
  *
  *   <Bar onChange={...} />
  *   ```
  */
-export function angular2react<Props extends object>(template: string) {
+export function angular2react<Props extends object>(
+  componentName: string,
+  component: IComponentOptions
+): React.ComponentClass<Props> {
+
   return class extends React.Component<Props, State<Props>> {
 
     state: State<Props> = {
@@ -75,12 +80,30 @@ export function angular2react<Props extends object>(template: string) {
       if (this.state.didInitialCompile || !this.state.scope) {
         return
       }
-      div.innerHTML = template
-      $compile(div)(this.state.scope)
+
+      const bindings = bindingsToAttrs(component.bindings)
+      const element = $(`<${kebabCase(componentName)} ${bindings}></${componentName}>`)
+      $compile(element)(this.state.scope)
+      $(div).empty().append(element)
+
       this.setState({ didInitialCompile: true })
     }
 
   }
+}
+
+/**
+ * Convert an Angular `bindings` object to a partial HTML string
+ */
+function bindingsToAttrs<T extends object>(bindings?: T): string {
+  if (!bindings) {
+    return ''
+  }
+  let _bindings = []
+  for (const binding in bindings) {
+    _bindings.push(`${kebabCase(binding)}="props.${binding}"`)
+  }
+  return _bindings.join(' ')
 }
 
 /**

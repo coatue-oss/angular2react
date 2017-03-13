@@ -12,38 +12,41 @@ npm install angular2react --save
 
 ## Usage
 
-### 1. Create a React component
+### 1. Create an Angular component
 
-```jsx
-import { Component } from 'react'
-
-class MyComponent extends Component {
-  render() {
-    return <div>
-      <p>FooBar: {this.props.fooBar}</p>
-      <p>Baz: {this.props.baz}</p>
-    </div>
-  }
+```js
+const myComponent = {
+  bindings: {
+    fooBar: '<',
+    baz: '<'
+  },
+  template: `
+    <p>FooBar: {this.$ctrl.fooBar}</p>
+    <p>Baz: {this.$ctrl.baz}</p>
+  `
 }
 ```
 
 ### 2. Expose it to Angular
 
 ```js
-import { angular2react } from 'angular2react'
-
 angular
   .module('myModule', [])
-  .component('myComponent', angular2react(MyComponent, ['fooBar', 'baz']))
+  .component('myComponent', MyComponent)
 ```
 
-### 3. Use it in your Angular 1 code
+### 3. Convert it to a React Component
 
-```html
-<my-component
-  foo-bar="3"
-  baz="'baz'"
-></my-component>
+```js
+import { angular2react } from 'angular2react'
+
+const MyComponent = angular2react('myComponent', MyComponent)
+```
+
+### 4. Use it in your React code
+
+```jsx
+<MyComponent fooBar={3} baz={'baz'} />
 ```
 
 ## Tests

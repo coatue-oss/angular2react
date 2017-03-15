@@ -1,4 +1,4 @@
-import { element as $, ICompileService, mock, module } from 'angular'
+import { auto, element as $, mock, module } from 'angular'
 import 'angular-mocks'
 import * as React from 'react'
 import { renderIntoDocument } from 'react-addons-test-utils'
@@ -48,22 +48,22 @@ module('test', [])
   .component('fooBarBaz', FooBarBaz)
   .service('fooService', FooService)
 
-let $compile: any
+let $injector: any
 beforeEach(() => {
   mock.module('test')
-  mock.inject(function(_$compile_: ICompileService) {
-    $compile = _$compile_
+  mock.inject(function(_$injector_: auto.IInjectorService) {
+    $injector = _$injector_
   })
 })
 
 it('should give a react component', () => {
-  const Foo2 = compile($compile)
+  const Foo2 = compile($injector)
   const foo2 = new Foo2
   expect(foo2 instanceof React.Component).toBe(true)
 })
 
 it('should render', () => {
-  const Foo2 = compile($compile)
+  const Foo2 = compile($injector)
   const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} />) as any
   const element = $(findDOMNode(foo2))
   expect(element.find('span').eq(0).text()).toBe('hello')
@@ -71,7 +71,7 @@ it('should render', () => {
 })
 
 it('should update', () => {
-  const Foo2 = compile($compile)
+  const Foo2 = compile($injector)
   const element = document.createElement('div')
   render(<Foo2 foo='hello' fooBar={42} />, element)
   expect($(element).find('span').eq(1).text()).toBe('504')
@@ -81,7 +81,7 @@ it('should update', () => {
 })
 
 it('should destroy', () => {
-  const Foo2 = compile($compile)
+  const Foo2 = compile($injector)
   const element = document.createElement('div')
   render(<Foo2 foo='hello' fooBar={42} />, element)
   spyOn(FooController.prototype, '$onDestroy')
@@ -90,7 +90,7 @@ it('should destroy', () => {
 })
 
 it('should take callbacks', () => {
-  const Foo2 = compile($compile)
+  const Foo2 = compile($injector)
   const cb = jasmine.createSpy('bazMoo1Boo')
   const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} bazMoo1Boo={cb} />) as any
   const element = $(findDOMNode(foo2))
@@ -99,7 +99,7 @@ it('should take callbacks', () => {
 })
 
 it('should work with dependency injected code', () => {
-  const Foo2 = compile($compile)
+  const Foo2 = compile($injector)
   const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} />) as any
   const element = $(findDOMNode(foo2))
   expect(element.find('span').eq(2).text()).toBe('84')
@@ -107,7 +107,7 @@ it('should work with dependency injected code', () => {
 
 // TODO: support children
 it('should not support children', () => {
-  const Foo2 = compile($compile)
+  const Foo2 = compile($injector)
   const foo2 = renderIntoDocument(
     <Foo2 foo='hello' fooBar={42}>
       <span>Child</span>
@@ -117,12 +117,12 @@ it('should not support children', () => {
   expect(element.find('ng-transclude').html()).toBe('')
 })
 
-function compile($compile: ICompileService) {
+function compile($injector: auto.IInjectorService) {
   interface Props {
     bazMoo1Boo?(value: number): any
     foo: string
     fooBar: number
   }
 
-  return angular2react<Props>('fooBarBaz', FooBarBaz, $compile)
+  return angular2react<Props>('fooBarBaz', FooBarBaz, $injector)
 }

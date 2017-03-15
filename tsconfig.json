@@ -21,6 +21,7 @@
     "target": "es6"
   },
   "files": [
+    "types/lodash.kebabcase.d.ts",
     "index.tsx",
     "test.tsx"
   ]

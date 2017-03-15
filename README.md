@@ -12,13 +12,13 @@ npm install angular2react --save
 
 ## Usage
 
-### 1. Save a reference to the `$compile` service
+### 1. Save a reference to the `$injector`
 
 ```js
-let $compile
+let $injector
 angular
   .module('myModule')
-  .run(['$compile', function(_$compile) { $compile = _$compile }])
+  .run(['$injector', function(_$injector) { $injector = _$injector }])
 ```
 
 ### 2. Create an Angular component
@@ -49,7 +49,7 @@ angular
 ```js
 import { angular2react } from 'angular2react'
 
-const MyComponent = angular2react('myComponent', MyComponent, $compile)
+const MyComponent = angular2react('myComponent', MyComponent, $injector)
 ```
 
 ### 5. Use it in your React code
@@ -60,7 +60,7 @@ const MyComponent = angular2react('myComponent', MyComponent, $compile)
 
 ## Why step 1?
 
-We need a reference to the `$compile` service instantiated by the injector belonging to the Angular module that registered the Angular component you're exposing (that's a mouthful). That way we can manually compile your component.
+We need a reference to the `$injector` created by the Angular module that registered the Angular component you're exposing. That way we can manually compile your component.
 
 If you use [ngimport](https://github.com/bcherny/ngimport), you can skip step 1 and omit the last argument in step 4:
 

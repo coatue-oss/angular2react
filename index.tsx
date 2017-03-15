@@ -1,6 +1,6 @@
 import { element as $, IComponentOptions, IScope } from 'angular'
-import kebabCase = require('lodash.kebabcase')
-import { $compile as defaultCompile, $log, $rootScope } from 'ngimport'
+import * as kebabCase from 'lodash.kebabcase'
+import { $injector as defaultInjector } from 'ngimport'
 import * as React from 'react'
 
 interface Scope<Props> extends IScope {
@@ -36,7 +36,7 @@ interface State<Props> {
 export function angular2react<Props extends object>(
   componentName: string,
   component: IComponentOptions,
-  $compile = defaultCompile
+  $injector = defaultInjector
 ): React.ComponentClass<Props> {
 
   return class extends React.Component<Props, State<Props>> {
@@ -47,7 +47,7 @@ export function angular2react<Props extends object>(
 
     componentWillMount() {
       this.setState({
-        scope: Object.assign($rootScope.$new(true), { props: writable(this.props) })
+        scope: Object.assign($injector.get('$rootScope').$new(true), { props: writable(this.props) })
       })
     }
 
@@ -84,7 +84,7 @@ export function angular2react<Props extends object>(
 
       const bindings = bindingsToAttrs(component.bindings)
       const element = $(`<${kebabCase(componentName)} ${bindings}></${componentName}>`)
-      $compile(element)(this.state.scope)
+      $injector.get('$compile')(element)(this.state.scope)
       $(div).empty().append(element)
       this.digest()
 
@@ -136,7 +136,7 @@ function writable<T extends object>(object: T): T {
           if (Object.getOwnPropertyDescriptor(object, key).writable) {
             return object[key] = value
           } else {
-            $log.warn(`Tried to write to non-writable property "${key}" of`, object, `. Consider using a callback instead of 2-way binding.`)
+            console.warn(`Tried to write to non-writable property "${key}" of`, object, `. Consider using a callback instead of 2-way binding.`)
           }
         }
       })

@@ -47,7 +47,6 @@
   },
   "dependencies": {
     "@types/angular": "^1.6.9",
-    "@types/lodash.kebabcase": "^4.1.1",
     "@types/react": "^15.0.16",
     "@types/react-dom": "^0.14.23",
     "angular": "^1.6.3",

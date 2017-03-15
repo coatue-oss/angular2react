@@ -2,7 +2,7 @@
 
 # angular2react [![Build Status](https://img.shields.io/circleci/project/coatue/angular2react.svg?branch=master&style=flat-square)](https://circleci.com/gh/coatue/angular2react) [![NPM](https://img.shields.io/npm/v/angular2react.svg?style=flat-square)](https://www.npmjs.com/package/angular2react) [![Apache2](https://img.shields.io/npm/l/angular2react.svg?style=flat-square)](https://opensource.org/licenses/Apache2)
 
-> One line of code to turn any Angular 1 Component into a React Component
+> One line of code to turn any Angular 1 Component into a React Component (opposite of [react2angular](https://github.com/coatue/react2angular))
 
 ## Installation
 

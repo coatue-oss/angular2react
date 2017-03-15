@@ -1,6 +1,6 @@
-import { element as $, ICompileService, IComponentOptions, IScope } from 'angular'
+import { element as $, IComponentOptions, IScope } from 'angular'
 import kebabCase = require('lodash.kebabcase')
-import { $log, $rootScope } from 'ngimport'
+import { $compile as defaultCompile, $log, $rootScope } from 'ngimport'
 import * as React from 'react'
 
 interface Scope<Props> extends IScope {
@@ -36,7 +36,7 @@ interface State<Props> {
 export function angular2react<Props extends object>(
   componentName: string,
   component: IComponentOptions,
-  $compile: ICompileService
+  $compile = defaultCompile
 ): React.ComponentClass<Props> {
 
   return class extends React.Component<Props, State<Props>> {

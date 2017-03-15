@@ -62,13 +62,12 @@ const MyComponent = angular2react('myComponent', MyComponent, $compile)
 
 We need a reference to the `$compile` service used to compile the Angular component you're exposing, so that we can manually compile the component.
 
-If you use [ngimport](https://github.com/bcherny/ngimport), you can skip step 1, and step 4 becomes:
+If you use [ngimport](https://github.com/bcherny/ngimport), you can skip step 1 and omit the last argument in step 4:
 
 ```js
 import { angular2react } from 'angular2react'
-import { $compile } from 'ngimport'
 
-const MyComponent = angular2react('myComponent', MyComponent, $compile)
+const MyComponent = angular2react('myComponent', MyComponent)
 ```
 
 ## Caveats

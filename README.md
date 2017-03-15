@@ -12,10 +12,19 @@ npm install angular2react --save
 
 ## Usage
 
-### 1. Create an Angular component
+### 1. Save a reference to the `$compile` service
 
 ```js
-const myComponent = {
+let $compile
+angular
+  .module('myModule')
+  .run(['$compile', function(_$compile) { $compile = _$compile }])
+```
+
+### 2. Create an Angular component
+
+```js
+const MyComponent = {
   bindings: {
     fooBar: '<',
     baz: '<'
@@ -27,7 +36,7 @@ const myComponent = {
 }
 ```
 
-### 2. Expose it to Angular
+### 3. Expose it to Angular
 
 ```js
 angular
@@ -35,19 +44,37 @@ angular
   .component('myComponent', MyComponent)
 ```
 
-### 3. Convert it to a React Component
+### 4. Convert it to a React Component
 
 ```js
 import { angular2react } from 'angular2react'
 
-const MyComponent = angular2react('myComponent', MyComponent)
+const MyComponent = angular2react('myComponent', MyComponent, $compile)
 ```
 
-### 4. Use it in your React code
+### 5. Use it in your React code
 
-```jsx
-<MyComponent fooBar={3} baz={'baz'} />
+```js
+<MyComponent fooBar={3} baz='baz' />
 ```
+
+## Why step 2?
+
+We need a reference to the `$compile` service used to compile the Angular component you're exposing, so that we can manually compile the component.
+
+If you use [ngimport](https://github.com/bcherny/ngimport), you can skip step 1, and step 4 becomes:
+
+```js
+import { angular2react } from 'angular2react'
+import { $compile } from 'ngimport'
+
+const MyComponent = angular2react('myComponent', MyComponent, $compile)
+```
+
+## Caveats
+
+- Only one way bindings (`<`) are supported, because this is the only type of binding that React supports
+- Be sure to bootstrap your Angular app before rendering its React counterpart
 
 ## Tests
 

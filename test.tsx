@@ -1,194 +1,128 @@
-import { bootstrap, element as $, ICompileService, mock, module } from 'angular'
+import { element as $, ICompileService, mock, module } from 'angular'
 import 'angular-mocks'
-import { $rootScope } from 'ngimport'
 import * as React from 'react'
-import { Simulate } from 'react-addons-test-utils'
+import { renderIntoDocument } from 'react-addons-test-utils'
+import { findDOMNode, render, unmountComponentAtNode } from 'react-dom'
 import { angular2react } from './'
 
-class TestOne extends React.Component<Props, void> {
-  render() {
-    return <div>
-      <p>Foo: {this.props.foo}</p>
-      <p>Bar: {this.props.bar.join(',')}</p>
-      <p onClick={() => this.props.baz(42)}>Baz</p>
-      {this.props.children}
-    </div>
+// Angular component
+
+class FooController {
+  bazMoo1Boo: (value: number) => any
+  foo: string
+  fooBar: number
+  _fooBar: number
+  constructor(private fooService: FooService) {
+    this.fooService.add42(3) // prevent "unused" error
   }
-  componentWillUnmount() {}
+  onClick() {
+    if (this.bazMoo1Boo) {
+      this.bazMoo1Boo(this.fooBar)
+    }
+  }
+  $onDestroy() {}
 }
 
-const TestTwo: React.StatelessComponent<Props> = props =>
-  <div>
-    <p>Foo: {props.foo}</p>
-    <p>Bar: {props.bar.join(',')}</p>
-    <p onClick={() => props.baz(42)}>Baz</p>
-      {props.children}
-  </div>
+const FooBarBaz = {
+  bindings: {
+    bazMoo1Boo: '<',
+    foo: '<',
+    fooBar: '<'
+  },
+  controller: FooController,
+  template: `
+    <span>{{ $ctrl.foo }}</span>
+    <span>{{ $ctrl.fooBar*12 }}</span>
+    <span>{{ $ctrl.fooService.add42($ctrl.fooBar) }}</span>
+    <div ng-click="$ctrl.onClick()">Click Me</div>
+    <ng-transclude></ng-transclude>
+  `,
+  transclude: true
+}
 
-const TestAngularOne = angular2react(TestOne, ['foo', 'bar', 'baz'])
-const TestAngularTwo = angular2react(TestTwo, ['foo', 'bar', 'baz'])
+class FooService {
+  add42(n: number) { return n + 42 }
+}
 
 module('test', [])
-  .component('testAngularOne', TestAngularOne)
-  .component('testAngularTwo', TestAngularTwo)
+  .component('fooBarBaz', FooBarBaz)
+  .service('fooService', FooService)
 
-bootstrap($(), ['test'])
-
-interface Props {
-  bar: boolean[]
-  baz(value: number): any
-  foo: number
-}
-
-describe('angular2react', () => {
-
-  let $compile: any
-
-  beforeEach(() => {
-    mock.module('test')
-    mock.inject(function(_$compile_: ICompileService) {
-      $compile = _$compile_
-    })
+let $compile: any
+beforeEach(() => {
+  mock.module('test')
+  mock.inject(function(_$compile_: ICompileService) {
+    $compile = _$compile_
   })
-
-  it('should give an angular component', () => {
-    expect(TestAngularOne.bindings).not.toBe(undefined)
-    expect(TestAngularOne.controller).not.toBe(undefined)
-  })
-
-  describe('react classes', () => {
-
-    it('should render', () => {
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz: (value: number) => value + 1,
-        foo: 1
-      })
-      const element = $(`<test-angular-one foo="foo" bar="bar" baz="baz"></test-angular-one>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      expect(element.find('p').length).toBe(3)
-    })
-
-    it('should update', () => {
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz: (value: number) => value + 1,
-        foo: 1
-      })
-      const element = $(`<test-angular-one foo="foo" bar="bar" baz="baz"></test-angular-one>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      expect(element.find('p').eq(1).text()).toBe('Bar: true,false')
-      scope.$apply(() =>
-        scope.bar = [false, true, true]
-      )
-      expect(element.find('p').eq(1).text()).toBe('Bar: false,true,true')
-    })
-
-    it('should destroy', () => {
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz: (value: number) => value + 1,
-        foo: 1
-      })
-      const element = $(`<test-angular-one foo="foo" bar="bar" baz="baz"></test-angular-one>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      spyOn(TestOne.prototype, 'componentWillUnmount')
-      scope.$destroy()
-      expect(TestOne.prototype.componentWillUnmount).toHaveBeenCalled()
-    })
-
-    it('should take callbacks', () => {
-      const baz = jasmine.createSpy('baz')
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz,
-        foo: 1
-      })
-      const element = $(`<test-angular-one foo="foo" bar="bar" baz="baz"></test-angular-one>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      Simulate.click(element.find('p').eq(2)[0])
-      expect(baz).toHaveBeenCalledWith(42)
-    })
-
-    // TODO: support children
-    it('should not support children', () => {
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz: (value: number) => value + 1,
-        foo: 1
-      })
-      const element = $(`<test-angular-one foo="foo" bar="bar" baz="baz"><span>Transcluded</span></test-angular-one>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      expect(element.find('span').length).toBe(0)
-    })
-
-  })
-
-  describe('react stateless components', () => {
-
-    it('should render', () => {
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz: (value: number) => value + 1,
-        foo: 1
-      })
-      const element = $(`<test-angular-two foo="foo" bar="bar" baz="baz"></test-angular-two>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      expect(element.find('p').length).toBe(3)
-    })
-
-    it('should update', () => {
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz: (value: number) => value + 1,
-        foo: 1
-      })
-      const element = $(`<test-angular-two foo="foo" bar="bar" baz="baz"></test-angular-two>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      expect(element.find('p').eq(1).text()).toBe('Bar: true,false')
-      scope.$apply(() =>
-        scope.bar = [false, true, true]
-      )
-      expect(element.find('p').eq(1).text()).toBe('Bar: false,true,true')
-    })
-
-    // TODO: figure out how to test this
-    xit('should destroy', () => {})
-
-    it('should take callbacks', () => {
-      const baz = jasmine.createSpy('baz')
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz,
-        foo: 1
-      })
-      const element = $(`<test-angular-two foo="foo" bar="bar" baz="baz"></test-angular-two>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      Simulate.click(element.find('p').eq(2)[0])
-      expect(baz).toHaveBeenCalledWith(42)
-    })
-
-    // TODO: support children
-    it('should not support children', () => {
-      const scope = Object.assign($rootScope.$new(true), {
-        bar: [true, false],
-        baz: (value: number) => value + 1,
-        foo: 1
-      })
-      const element = $(`<test-angular-two foo="foo" bar="bar" baz="baz"><span>Transcluded</span></test-angular-two>`)
-      $compile(element)(scope)
-      $rootScope.$apply()
-      expect(element.find('span').length).toBe(0)
-    })
-
-  })
-
 })
+
+it('should give a react component', () => {
+  const Foo2 = compile($compile)
+  const foo2 = new Foo2
+  expect(foo2 instanceof React.Component).toBe(true)
+})
+
+it('should render', () => {
+  const Foo2 = compile($compile)
+  const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} />) as any
+  const element = $(findDOMNode(foo2))
+  expect(element.find('span').eq(0).text()).toBe('hello')
+  expect(element.find('span').eq(1).text()).toBe('504')
+})
+
+it('should update', () => {
+  const Foo2 = compile($compile)
+  const element = document.createElement('div')
+  render(<Foo2 foo='hello' fooBar={42} />, element)
+  expect($(element).find('span').eq(1).text()).toBe('504')
+  render(<Foo2 foo='hello' fooBar={43} />, element)
+  expect($(element).find('span').eq(1).text()).toBe('516')
+  unmountComponentAtNode(element)
+})
+
+it('should destroy', () => {
+  const Foo2 = compile($compile)
+  const element = document.createElement('div')
+  render(<Foo2 foo='hello' fooBar={42} />, element)
+  spyOn(FooController.prototype, '$onDestroy')
+  unmountComponentAtNode(element)
+  expect(FooController.prototype.$onDestroy).toHaveBeenCalled()
+})
+
+it('should take callbacks', () => {
+  const Foo2 = compile($compile)
+  const cb = jasmine.createSpy('bazMoo1Boo')
+  const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} bazMoo1Boo={cb} />) as any
+  const element = $(findDOMNode(foo2))
+  element.find('div').triggerHandler('click')
+  expect(cb).toHaveBeenCalledWith(42)
+})
+
+it('should work with dependency injected code', () => {
+  const Foo2 = compile($compile)
+  const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} />) as any
+  const element = $(findDOMNode(foo2))
+  expect(element.find('span').eq(2).text()).toBe('84')
+})
+
+// TODO: support children
+it('should not support children', () => {
+  const Foo2 = compile($compile)
+  const foo2 = renderIntoDocument(
+    <Foo2 foo='hello' fooBar={42}>
+      <span>Child</span>
+    </Foo2>
+  ) as any
+  const element = $(findDOMNode(foo2))
+  expect(element.find('ng-transclude').html()).toBe('')
+})
+
+function compile($compile: ICompileService) {
+  interface Props {
+    bazMoo1Boo?(value: number): any
+    foo: string
+    fooBar: number
+  }
+
+  return angular2react<Props>('fooBarBaz', FooBarBaz, $compile)
+}

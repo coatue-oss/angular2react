@@ -1,6 +1,6 @@
-import { IComponentOptions, IScope } from 'angular'
+import { element as $, ICompileService, IComponentOptions, IScope } from 'angular'
 import kebabCase = require('lodash.kebabcase')
-import { $compile, $log, $rootScope } from 'ngimport'
+import { $log, $rootScope } from 'ngimport'
 import * as React from 'react'
 
 interface Scope<Props> extends IScope {
@@ -28,14 +28,15 @@ interface State<Props> {
  *     onChange(value: number): void
  *   }
  *
- *   const Bar = angular2react<Props>('bar', Bar)
+ *   const Bar = angular2react<Props>('bar', Bar, $compile)
  *
  *   <Bar onChange={...} />
  *   ```
  */
 export function angular2react<Props extends object>(
   componentName: string,
-  component: IComponentOptions
+  component: IComponentOptions,
+  $compile: ICompileService
 ): React.ComponentClass<Props> {
 
   return class extends React.Component<Props, State<Props>> {
@@ -73,7 +74,7 @@ export function angular2react<Props extends object>(
         return
       }
       this.state.scope.props = writable(props)
-      try { this.state.scope.$digest() } catch (e) { }
+      this.digest()
     }
 
     private compile(div: HTMLDivElement) {
@@ -85,8 +86,16 @@ export function angular2react<Props extends object>(
       const element = $(`<${kebabCase(componentName)} ${bindings}></${componentName}>`)
       $compile(element)(this.state.scope)
       $(div).empty().append(element)
+      this.digest()
 
       this.setState({ didInitialCompile: true })
+    }
+
+    private digest() {
+      if (!this.state.scope) {
+        return
+      }
+      try { this.state.scope.$digest() } catch (e) { }
     }
 
   }

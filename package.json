@@ -11,7 +11,7 @@
     "pretest": "npm run build",
     "prepublish": "npm test",
     "test": "karma start --single-run",
-    "tdd": "npm-run-all -pr watch:*",
+    "watch": "npm-run-all -pr watch:*",
     "watch:ts": "tsc -w",
     "watch:test": "karma start"
   },

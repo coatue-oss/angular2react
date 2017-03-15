@@ -58,9 +58,9 @@ const MyComponent = angular2react('myComponent', MyComponent, $compile)
 <MyComponent fooBar={3} baz='baz' />
 ```
 
-## Why step 2?
+## Why step 1?
 
-We need a reference to the `$compile` service used to compile the Angular component you're exposing, so that we can manually compile the component.
+We need a reference to the `$compile` service instantiated by the injector belonging to the Angular module that registered the Angular component you're exposing (that's a mouthful). That way we can manually compile your component.
 
 If you use [ngimport](https://github.com/bcherny/ngimport), you can skip step 1 and omit the last argument in step 4:
 

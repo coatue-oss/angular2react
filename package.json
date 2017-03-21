@@ -1,6 +1,6 @@
 {
   "name": "angular2react",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "One line of code to turn any Angular 1 Component into a React Component",
   "main": "index.js",
   "main:esnext": "index.es2015.js",
@@ -17,15 +17,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/coatue/angular2react.git"
+    "url": "git+ssh://git@github.com/coatue-oss/angular2react.git"
   },
   "keywords": [],
   "author": "Boris Cherny <boris@performancejs.com>",
   "license": "Apache2",
   "bugs": {
-    "url": "https://github.com/coatue/angular2react/issues"
+    "url": "https://github.com/coatue-oss/angular2react/issues"
   },
-  "homepage": "https://github.com/coatue/angular2react#readme",
+  "homepage": "https://github.com/coatue-oss/angular2react#readme",
   "devDependencies": {
     "@types/angular-mocks": "^1.5.9",
     "@types/jasmine": "^2.5.44",

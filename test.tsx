@@ -1,8 +1,7 @@
 import { auto, element as $, mock, module } from 'angular'
 import 'angular-mocks'
 import * as React from 'react'
-import { renderIntoDocument } from 'react-addons-test-utils'
-import { findDOMNode, render, unmountComponentAtNode } from 'react-dom'
+import { render, unmountComponentAtNode } from 'react-dom'
 import { angular2react } from './'
 
 // Angular component
@@ -64,10 +63,11 @@ it('should give a react component', () => {
 
 it('should render', () => {
   const Foo2 = compile($injector)
-  const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} />) as any
-  const element = $(findDOMNode(foo2))
-  expect(element.find('span').eq(0).text()).toBe('hello')
-  expect(element.find('span').eq(1).text()).toBe('504')
+  const element = document.createElement('div')
+  render(<Foo2 foo='hello' fooBar={42} />, element)
+  expect($(element).find('span').eq(0).text()).toBe('hello')
+  expect($(element).find('span').eq(1).text()).toBe('504')
+  unmountComponentAtNode(element)
 })
 
 it('should update', () => {
@@ -75,6 +75,7 @@ it('should update', () => {
   const element = document.createElement('div')
   render(<Foo2 foo='hello' fooBar={42} />, element)
   expect($(element).find('span').eq(1).text()).toBe('504')
+  unmountComponentAtNode(element)
   render(<Foo2 foo='hello' fooBar={43} />, element)
   expect($(element).find('span').eq(1).text()).toBe('516')
   unmountComponentAtNode(element)
@@ -85,44 +86,55 @@ it('should destroy', () => {
   const element = document.createElement('div')
   render(<Foo2 foo='hello' fooBar={42} />, element)
   spyOn(FooController.prototype, '$onDestroy')
-  unmountComponentAtNode(element)
+  const unmounted = unmountComponentAtNode(element)
+  expect(unmounted).toBeTruthy()
   expect(FooController.prototype.$onDestroy).toHaveBeenCalled()
+  expect(element.childNodes.length).toBe(0)
 })
 
 it('should take callbacks', () => {
   const Foo2 = compile($injector)
+  const element = document.createElement('div')
   const cb = jasmine.createSpy('bazMoo1Boo')
-  const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} bazMoo1Boo={cb} />) as any
-  const element = $(findDOMNode(foo2))
-  element.find('div').triggerHandler('click')
+  render(<Foo2 foo='hello' fooBar={42} bazMoo1Boo={cb} />, element)
+  $(element).find('div').triggerHandler('click')
   expect(cb).toHaveBeenCalledWith(42)
+  unmountComponentAtNode(element)
 })
 
 it('should work with dependency injected code', () => {
   const Foo2 = compile($injector)
-  const foo2 = renderIntoDocument(<Foo2 foo='hello' fooBar={42} />) as any
-  const element = $(findDOMNode(foo2))
-  expect(element.find('span').eq(2).text()).toBe('84')
+  const element = document.createElement('div')
+  render(<Foo2 foo='hello' fooBar={42} />, element)
+  expect($(element).find('span').eq(2).text()).toBe('84')
+  unmountComponentAtNode(element)
 })
 
 // TODO: support children
 it('should not support children', () => {
   const Foo2 = compile($injector)
-  const foo2 = renderIntoDocument(
-    <Foo2 foo='hello' fooBar={42}>
-      <span>Child</span>
-    </Foo2>
-  ) as any
-  const element = $(findDOMNode(foo2))
-  expect(element.find('ng-transclude').html()).toBe('')
+  const element = document.createElement('div')
+  render(<Foo2 foo='hello' fooBar={42}>
+           <span>Child</span>
+         </Foo2>, element)
+  expect($(element).find('ng-transclude').html()).toBe('')
+  unmountComponentAtNode(element)
 })
 
-function compile($injector: auto.IInjectorService) {
-  interface Props {
-    bazMoo1Boo?(value: number): any
-    foo: string
-    fooBar: number
-  }
+it('should use the angular component as the root component', () => {
+  const Foo2 = compile($injector)
+  const element = document.createElement('div')
+  render(<Foo2 foo='hello' fooBar={42} />, element)
+  expect($(element).children('foo-bar-baz-single')[0]).toBeTruthy
+  unmountComponentAtNode(element)
+})
 
+interface Props {
+  bazMoo1Boo?(value: number): any
+  foo: string
+  fooBar: number
+}
+
+function compile($injector: auto.IInjectorService) {
   return angular2react<Props>('fooBarBaz', FooBarBaz, $injector)
 }

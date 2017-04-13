@@ -1,4 +1,4 @@
-import { element as $, IComponentOptions, IScope } from 'angular'
+import { IComponentOptions, IScope } from 'angular'
 import * as kebabCase from 'lodash.kebabcase'
 import { $injector as defaultInjector } from 'ngimport'
 import * as React from 'react'
@@ -64,7 +64,15 @@ export function angular2react<Props extends object>(
 
     // called only once to set up DOM, after componentWillMount
     render() {
-      return <div ref={this.compile.bind(this)} />
+      const bindings: {[key: string]: string} = {}
+      if (component.bindings) {
+        for (const binding in component.bindings) {
+          bindings[kebabCase(binding)] = `props.${binding}`
+        }
+      }
+      return React.createElement(kebabCase(componentName),
+        { ...bindings, ref: this.compile.bind(this) }
+      )
     }
 
     // makes angular aware of changed props
@@ -77,17 +85,13 @@ export function angular2react<Props extends object>(
       this.digest()
     }
 
-    private compile(div: HTMLDivElement) {
+    private compile(element: HTMLElement) {
       if (this.state.didInitialCompile || !this.state.scope) {
         return
       }
 
-      const bindings = bindingsToAttrs(component.bindings)
-      const element = $(`<${kebabCase(componentName)} ${bindings}></${componentName}>`)
       $injector.get('$compile')(element)(this.state.scope)
-      $(div).empty().append(element)
       this.digest()
-
       this.setState({ didInitialCompile: true })
     }
 
@@ -99,20 +103,6 @@ export function angular2react<Props extends object>(
     }
 
   }
-}
-
-/**
- * Convert an Angular `bindings` object to a partial HTML string
- */
-function bindingsToAttrs<T extends object>(bindings?: T): string {
-  if (!bindings) {
-    return ''
-  }
-  let _bindings = []
-  for (const binding in bindings) {
-    _bindings.push(`${kebabCase(binding)}="props.${binding}"`)
-  }
-  return _bindings.join(' ')
 }
 
 /**

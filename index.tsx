@@ -1,5 +1,5 @@
 import { IComponentOptions, IScope } from 'angular'
-import * as kebabCase from 'lodash.kebabcase'
+import kebabCase = require('lodash.kebabcase')
 import { $injector as defaultInjector } from 'ngimport'
 import * as React from 'react'
 

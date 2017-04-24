@@ -6,8 +6,7 @@
     "jsx": "react",
     "lib": [
       "dom",
-      "es2015",
-      "es2016.array.include"
+      "es2015"
     ],
     "module": "commonjs",
     "moduleResolution": "node",
@@ -21,7 +20,6 @@
     "target": "es6"
   },
   "files": [
-    "types/lodash.kebabcase.d.ts",
     "index.tsx",
     "test.tsx"
   ]

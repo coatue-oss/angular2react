@@ -1,6 +1,6 @@
 {
   "name": "angular2react",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "One line of code to turn any Angular 1 Component into a React Component",
   "main": "index.js",
   "main:esnext": "index.es2015.js",
@@ -29,6 +29,7 @@
   "devDependencies": {
     "@types/angular-mocks": "^1.5.9",
     "@types/jasmine": "^2.5.44",
+    "@types/lodash.kebabcase": "^4.1.2",
     "@types/react-addons-test-utils": "^0.14.17",
     "angular-mocks": "^1.6.2",
     "jasmine": "^2.5.3",
@@ -46,9 +47,9 @@
     "watchify": "^3.9.0"
   },
   "dependencies": {
-    "@types/angular": "^1.6.9",
-    "@types/react": "^15.0.16",
-    "@types/react-dom": "^0.14.23",
+    "@types/angular": "^1.6.15",
+    "@types/react": "^15.0.22",
+    "@types/react-dom": "^15.5.0",
     "angular": "^1.6.3",
     "lodash.kebabcase": "^4.1.1",
     "ngimport": "^0.6.0",

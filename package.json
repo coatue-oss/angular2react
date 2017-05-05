@@ -27,11 +27,11 @@
   },
   "homepage": "https://github.com/coatue-oss/angular2react#readme",
   "devDependencies": {
-    "@types/angular-mocks": "^1.5.9",
+    "@types/angular-mocks": ">=1.5.0",
     "@types/jasmine": "^2.5.44",
     "@types/lodash.kebabcase": "^4.1.2",
     "@types/react-addons-test-utils": "^0.14.17",
-    "angular-mocks": "^1.6.2",
+    "angular-mocks": ">=1.5.0",
     "jasmine": "^2.5.3",
     "karma": "^1.5.0",
     "karma-browserify": "^5.1.1",
@@ -47,10 +47,10 @@
     "watchify": "^3.9.0"
   },
   "dependencies": {
-    "@types/angular": "^1.6.15",
+    "@types/angular": ">=1.5.0",
     "@types/react": "^15.0.22",
     "@types/react-dom": "^15.5.0",
-    "angular": "^1.6.3",
+    "angular": ">=1.5.0",
     "lodash.kebabcase": "^4.1.1",
     "ngimport": "^0.6.0",
     "react": "^15.4.2",

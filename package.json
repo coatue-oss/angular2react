@@ -21,7 +21,7 @@
   },
   "keywords": [],
   "author": "Boris Cherny <boris@performancejs.com>",
-  "license": "Apache2",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/coatue-oss/angular2react/issues"
   },

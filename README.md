@@ -83,4 +83,4 @@ npm test
 
 ## License
 
-Apache2
+Apache-2.0

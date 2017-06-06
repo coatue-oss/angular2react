@@ -52,7 +52,7 @@
     "@types/react-dom": "^15.5.0",
     "angular": ">=1.5.0",
     "lodash.kebabcase": "^4.1.1",
-    "ngimport": "^0.6.0",
+    "ngimport": "^0.7.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   }

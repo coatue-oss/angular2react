@@ -41,7 +41,7 @@
     "karma-source-map-support": "^1.2.0",
     "npm-run-all": "^4.0.2",
     "react-addons-test-utils": "^15.4.2",
-    "rollupify": "^0.3.9",
+    "rollupify": "^0.4.0",
     "tslint": "^5.0.0",
     "typescript": "^2.2.1",
     "watchify": "^3.9.0"

@@ -49,7 +49,7 @@
   "dependencies": {
     "@types/angular": ">=1.5.0",
     "@types/react": "^15.0.22",
-    "@types/react-dom": "^15.5.0",
+    "@types/react-dom": "^16.0.0",
     "angular": ">=1.5.0",
     "lodash.kebabcase": "^4.1.1",
     "ngimport": "^0.6.0",

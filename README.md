@@ -70,6 +70,10 @@ import { angular2react } from 'angular2react'
 const MyComponent = angular2react('myComponent', MyComponent)
 ```
 
+## Full Examples
+
+https://github.com/bcherny/angular2react-demos
+
 ## Caveats
 
 - Only one way bindings (`<`) are supported, because this is the only type of binding that React supports

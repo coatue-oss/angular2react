@@ -7,6 +7,10 @@
 ## Installation
 
 ```sh
+# Using Yarn:
+yarn add angular2react
+
+# Or, using NPM:
 npm install angular2react --save
 ```
 

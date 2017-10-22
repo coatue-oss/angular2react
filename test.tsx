@@ -125,7 +125,7 @@ it('should use the angular component as the root component', () => {
   const Foo2 = compile($injector)
   const element = document.createElement('div')
   render(<Foo2 foo='hello' fooBar={42} />, element)
-  expect($(element).children('foo-bar-baz-single')[0]).toBeTruthy
+  expect($(element).find('foo-bar-baz')[0].parentElement).toBe(element)
   unmountComponentAtNode(element)
 })
 

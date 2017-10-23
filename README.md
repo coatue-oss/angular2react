@@ -8,10 +8,10 @@
 
 ```sh
 # Using Yarn:
-yarn add angular2react
+yarn add angular2react angular angular-resource react react-dom
 
 # Or, using NPM:
-npm install angular2react --save
+npm install angular2react angular angular-resource react react-dom --save
 ```
 
 ## Usage

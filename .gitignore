@@ -6,3 +6,4 @@ npm-debug.log
 *.map
 !karma.conf.js
 !types/lodash.kebabcase.d.ts
+yarn-error.log

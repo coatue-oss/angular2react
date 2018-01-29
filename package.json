@@ -55,7 +55,7 @@
     "@types/react": "^16.0.18",
     "@types/react-dom": "^16.0.2",
     "lodash.kebabcase": "^4.1.1",
-    "ngimport": "^0.8.0"
+    "ngimport": "^1.0.0"
   },
   "peerDependencies": {
     "angular": ">=1.5.0",

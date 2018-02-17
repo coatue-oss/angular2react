@@ -8,6 +8,7 @@
   "scripts": {
     "build": "npm run clean; tsc -d && mv ./index.js ./index.es2015.js && tsc -t es5",
     "clean": "rm -f ./*.d.ts; rm -f ./*.map",
+    "generate-package-lock": "rm -f package-lock.json && npm shrinkwrap && mv npm-shrinkwrap.json package-lock.json && npm i",
     "pretest": "npm run build",
     "prepublishOnly": "npm test",
     "tdd": "concurrently -k 'npm run watch:test' 'npm run watch:ts'",

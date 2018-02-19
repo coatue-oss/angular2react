@@ -1,6 +1,6 @@
 {
   "name": "angular2react",
-  "version": "2.2.4",
+  "version": "3.0.0",
   "description": "One line of code to turn any Angular 1 Component into a React Component",
   "main": "index.js",
   "main:esnext": "index.es2015.js",

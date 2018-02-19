@@ -16,7 +16,7 @@
     "preserveConstEnums": true,
     "pretty": true,
     "sourceMap": true,
-    "strictNullChecks": true,
+    "strict": true,
     "target": "es6"
   },
   "files": [

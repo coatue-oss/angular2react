@@ -1,9 +1,9 @@
-import { IComponentOptions, IScope } from 'angular'
+import * as angular from 'angular'
 import kebabCase = require('lodash.kebabcase')
 import { $injector as defaultInjector } from 'ngimport'
 import * as React from 'react'
 
-interface Scope<Props> extends IScope {
+interface Scope<Props> extends angular.IScope {
   props: Props
 }
 
@@ -35,7 +35,7 @@ interface State<Props> {
  */
 export function angular2react<Props extends object>(
   componentName: string,
-  component: IComponentOptions,
+  component: angular.IComponentOptions,
   $injector = defaultInjector
 ): React.ComponentClass<Props> {
 
@@ -123,7 +123,8 @@ function writable<T extends object>(object: T): T {
       Object.defineProperty(_object, key, {
         get() { return object[key] },
         set(value: any) {
-          if (Object.getOwnPropertyDescriptor(object, key).writable) {
+          let d = Object.getOwnPropertyDescriptor(object, key)
+          if (d && d.writable) {
             return object[key] = value
           } else {
             console.warn(`Tried to write to non-writable property "${key}" of`, object, `. Consider using a callback instead of 2-way binding.`)

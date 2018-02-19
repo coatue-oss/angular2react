@@ -7,10 +7,12 @@ import { angular2react } from './'
 // Angular component
 
 class FooController {
-  bazMoo1Boo: (value: number) => any
-  foo: string
-  fooBar: number
-  _fooBar: number
+  bazMoo1Boo(_value: number) {
+    return true
+  }
+  foo = 'foo'
+  fooBar = 1
+  _fooBar = 2
   constructor(private fooService: FooService) {
     this.fooService.add42(3) // prevent "unused" error
   }
@@ -57,7 +59,10 @@ beforeEach(() => {
 
 it('should give a react component', () => {
   const Foo2 = compile($injector)
-  const foo2 = new Foo2
+  const foo2 = new Foo2({
+    foo: 'foo',
+    fooBar: 1
+  })
   expect(foo2 instanceof React.Component).toBe(true)
 })
 

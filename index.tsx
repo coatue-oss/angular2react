@@ -45,7 +45,7 @@ export function angular2react<Props extends object>(
       didInitialCompile: false
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       this.setState({
         scope: Object.assign($injector.get('$rootScope').$new(true), { props: writable(this.props) })
       })
@@ -77,7 +77,7 @@ export function angular2react<Props extends object>(
 
     // makes angular aware of changed props
     // if we're not inside a digest cycle, kicks off a digest cycle before setting.
-    componentWillReceiveProps(props: Props) {
+    UNSAFE_componentWillReceiveProps(props: Props) {
       if (!this.state.scope) {
         return
       }

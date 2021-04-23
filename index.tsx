@@ -1,7 +1,7 @@
 import * as angular from 'angular'
 import kebabCase = require('lodash.kebabcase')
-import { $injector as defaultInjector } from 'ngimport'
 import * as React from 'react'
+import { $injector as defaultInjector } from 'ngimport'
 
 interface Scope<Props> extends angular.IScope {
   props: Props
@@ -45,7 +45,12 @@ export function angular2react<Props extends object>(
       didInitialCompile: false
     }
 
+    getInjector() {
+      return $injector || angular.element(document.querySelectorAll('[ng-app]')[0]).injector();
+    }
+
     componentWillMount() {
+      const $injector = this.getInjector();
       this.setState({
         scope: Object.assign($injector.get('$rootScope').$new(true), { props: writable(this.props) })
       })
@@ -64,10 +69,15 @@ export function angular2react<Props extends object>(
 
     // called only once to set up DOM, after componentWillMount
     render() {
-      const bindings: {[key: string]: string} = {}
+      const bindings: { [key: string]: string } = {}
       if (component.bindings) {
         for (const binding in component.bindings) {
-          bindings[kebabCase(binding)] = `props.${binding}`
+          if (component.bindings[binding].includes('@')) {
+            // @ts-ignore
+            bindings[kebabCase(binding)] = this.props[binding];
+          } else {
+            bindings[kebabCase(binding)] = `props.${binding}`;
+          }
         }
       }
       return React.createElement(kebabCase(componentName),
@@ -90,6 +100,7 @@ export function angular2react<Props extends object>(
         return
       }
 
+      const $injector = this.getInjector();
       $injector.get('$compile')(element)(this.state.scope)
       this.digest()
       this.setState({ didInitialCompile: true })

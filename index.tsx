@@ -1,7 +1,7 @@
 import * as angular from 'angular'
 import kebabCase = require('lodash.kebabcase')
-import { $injector as defaultInjector } from 'ngimport'
 import * as React from 'react'
+import { $injector as defaultInjector } from 'ngimport'
 
 interface Scope<Props> extends angular.IScope {
   props: Props
@@ -39,16 +39,15 @@ export function angular2react<Props extends object>(
   $injector = defaultInjector
 ): React.ComponentClass<Props> {
 
-  return class extends React.Component<Props, State<Props>> {
+  return class Component extends React.Component<Props, State<Props>> {
 
     state: State<Props> = {
-      didInitialCompile: false
+      didInitialCompile: false,
+      scope: Object.assign(this.getInjector().get('$rootScope').$new(true), { props: writable(this.props) }),
     }
 
-    componentWillMount() {
-      this.setState({
-        scope: Object.assign($injector.get('$rootScope').$new(true), { props: writable(this.props) })
-      })
+    getInjector() {
+      return $injector || angular.element(document.querySelectorAll('[ng-app]')[0]).injector();
     }
 
     componentWillUnmount() {
@@ -64,10 +63,15 @@ export function angular2react<Props extends object>(
 
     // called only once to set up DOM, after componentWillMount
     render() {
-      const bindings: {[key: string]: string} = {}
+      const bindings: { [key: string]: string } = {}
       if (component.bindings) {
         for (const binding in component.bindings) {
-          bindings[kebabCase(binding)] = `props.${binding}`
+          if (component.bindings[binding].includes('@')) {
+            // @ts-ignore
+            bindings[kebabCase(binding)] = this.props[binding];
+          } else {
+            bindings[kebabCase(binding)] = `props.${binding}`;
+          }
         }
       }
       return React.createElement(kebabCase(componentName),
@@ -77,12 +81,14 @@ export function angular2react<Props extends object>(
 
     // makes angular aware of changed props
     // if we're not inside a digest cycle, kicks off a digest cycle before setting.
-    componentWillReceiveProps(props: Props) {
-      if (!this.state.scope) {
-        return
+    static getDerivedStateFromProps(props: Props, state: State<Props>) {
+      if (!state.scope) {
+        return null
       }
-      this.state.scope.props = writable(props)
-      this.digest()
+      state.scope.props = writable(props)
+      Component.digest(state.scope)
+
+      return {...state};
     }
 
     private compile(element: HTMLElement) {
@@ -90,16 +96,17 @@ export function angular2react<Props extends object>(
         return
       }
 
+      const $injector = this.getInjector();
       $injector.get('$compile')(element)(this.state.scope)
-      this.digest()
+      Component.digest(this.state.scope)
       this.setState({ didInitialCompile: true })
     }
 
-    private digest() {
-      if (!this.state.scope) {
+    static digest(scope: Scope<Props>) {
+      if (!scope) {
         return
       }
-      try { this.state.scope.$digest() } catch (e) { }
+      try {scope.$digest() } catch (e) { }
     }
 
   }

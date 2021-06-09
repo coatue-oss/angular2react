@@ -39,21 +39,15 @@ export function angular2react<Props extends object>(
   $injector = defaultInjector
 ): React.ComponentClass<Props> {
 
-  return class extends React.Component<Props, State<Props>> {
+  return class Component extends React.Component<Props, State<Props>> {
 
     state: State<Props> = {
-      didInitialCompile: false
+      didInitialCompile: false,
+      scope: Object.assign(this.getInjector().get('$rootScope').$new(true), { props: writable(this.props) }),
     }
 
     getInjector() {
       return $injector || angular.element(document.querySelectorAll('[ng-app]')[0]).injector();
-    }
-
-    componentWillMount() {
-      const $injector = this.getInjector();
-      this.setState({
-        scope: Object.assign($injector.get('$rootScope').$new(true), { props: writable(this.props) })
-      })
     }
 
     componentWillUnmount() {
@@ -87,12 +81,14 @@ export function angular2react<Props extends object>(
 
     // makes angular aware of changed props
     // if we're not inside a digest cycle, kicks off a digest cycle before setting.
-    componentWillReceiveProps(props: Props) {
-      if (!this.state.scope) {
-        return
+    static getDerivedStateFromProps(props: Props, state: State<Props>) {
+      if (!state.scope) {
+        return null
       }
-      this.state.scope.props = writable(props)
-      this.digest()
+      state.scope.props = writable(props)
+      Component.digest(state.scope)
+
+      return {...state};
     }
 
     private compile(element: HTMLElement) {
@@ -102,15 +98,15 @@ export function angular2react<Props extends object>(
 
       const $injector = this.getInjector();
       $injector.get('$compile')(element)(this.state.scope)
-      this.digest()
+      Component.digest(this.state.scope)
       this.setState({ didInitialCompile: true })
     }
 
-    private digest() {
-      if (!this.state.scope) {
+    static digest(scope: Scope<Props>) {
+      if (!scope) {
         return
       }
-      try { this.state.scope.$digest() } catch (e) { }
+      try {scope.$digest() } catch (e) { }
     }
 
   }

@@ -6,6 +6,8 @@
 
 ## Installation
 
+Requires AngularJS 1.5.0 or later for the `.component()` API and one-way (`<`) bindings. This library wraps AngularJS (Angular 1.x) components, not Angular 2+ components.
+
 ```sh
 # Using Yarn:
 yarn add angular2react angular angular-resource react react-dom @types/angular @types/react @types/react-dom
@@ -21,21 +23,23 @@ npm install angular2react angular angular-resource react react-dom @types/angula
 ```js
 let $injector
 angular
-  .module('myModule')
+  .module('myModule', [])
   .run(['$injector', function(_$injector) { $injector = _$injector }])
 ```
+
+This creates the AngularJS module. If your app already defines `myModule`, use `.module('myModule')` instead to retrieve it without replacing its registrations.
 
 ### 2. Create an Angular component
 
 ```js
-const MyComponent = {
+const MyAngularComponent = {
   bindings: {
     fooBar: '<',
     baz: '<'
   },
   template: `
-    <p>FooBar: {this.$ctrl.fooBar}</p>
-    <p>Baz: {this.$ctrl.baz}</p>
+    <p>FooBar: {{$ctrl.fooBar}}</p>
+    <p>Baz: {{$ctrl.baz}}</p>
   `
 }
 ```
@@ -44,16 +48,18 @@ const MyComponent = {
 
 ```js
 angular
-  .module('myModule', [])
-  .component('myComponent', MyComponent)
+  .module('myModule')
+  .component('myComponent', MyAngularComponent)
 ```
 
 ### 4. Convert it to a React Component
 
+Run this step after your AngularJS app has bootstrapped and the run block in step 1 has assigned `$injector`.
+
 ```js
 import { angular2react } from 'angular2react'
 
-const MyComponent = angular2react('myComponent', MyComponent, $injector)
+const MyComponent = angular2react('myComponent', MyAngularComponent, $injector)
 ```
 
 ### 5. Use it in your React code
@@ -66,12 +72,18 @@ const MyComponent = angular2react('myComponent', MyComponent, $injector)
 
 We need a reference to the `$injector` created by the Angular module that registered the Angular component you're exposing. That way we can manually compile your component.
 
-If you use [ngimport](https://github.com/bcherny/ngimport), you can skip step 1 and omit the last argument in step 4:
+If you use [ngimport](https://github.com/bcherny/ngimport), replace step 1 with module creation that includes its AngularJS dependency:
+
+```js
+angular.module('myModule', ['bcherny/ngimport'])
+```
+
+If your app already defines `myModule`, add `'bcherny/ngimport'` to its existing dependency list instead of creating the module again. Continue with steps 2 and 3. After the app has bootstrapped, omit the last argument in step 4:
 
 ```js
 import { angular2react } from 'angular2react'
 
-const MyComponent = angular2react('myComponent', MyComponent)
+const MyComponent = angular2react('myComponent', MyAngularComponent)
 ```
 
 ## Full Examples
